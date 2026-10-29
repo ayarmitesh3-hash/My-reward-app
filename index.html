@@ -1,190 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Reward</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Reward App</title>
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 25px 16px;
-  background: #100c20;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  text-align: center;
-  font-size: 35px;
-  font-weight: bold;
-  color: #c49aff;
-  margin: 30px 0;
-}
-
-.card {
-  max-width: 500px;
-  margin: auto;
-  padding: 25px;
-  border-radius: 25px;
-  background: #211a38;
-}
-
-h2 {
-  margin-top: 0;
-}
-
-input {
-  width: 100%;
-  padding: 16px;
-  margin: 8px 0;
-  border: 1px solid #51426e;
-  border-radius: 12px;
-  background: #382d50;
-  color: white;
-  font-size: 16px;
-}
-
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 10px;
-  border: 0;
-  border-radius: 12px;
-  background: #8954ff;
-  color: white;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.secondary {
-  background: #382d50;
-}
-
-.hidden {
-  display: none;
-}
-
-.message {
-  margin-top: 15px;
-  overflow-wrap: anywhere;
-  color: #ff9da9;
-}
-
-.balance {
-  padding: 25px;
-  margin: 20px 0;
-  border-radius: 18px;
-  text-align: center;
-  background: #38275a;
-}
-
-.points {
-  font-size: 40px;
-  font-weight: bold;
-  color: #d1adff;
-}
-
-.small {
-  color: #c8bfd8;
-  font-size: 13px;
-  line-height: 1.5;
-}
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#172033;background:#f4f7fb}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:520px;margin:auto;padding:18px}
+header{background:linear-gradient(135deg,#5636d9,#1478e8);color:white;padding:24px 20px;border-radius:22px;margin:8px 0 18px}
+header h1{margin:0 0 6px;font-size:27px}header p{margin:0;opacity:.9}
+.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 5px 18px #14213d0c}
+h2{font-size:18px;margin:0 0 14px}.muted{color:#6c7485;font-size:13px}
+input{width:100%;padding:13px 14px;border:1px solid #d9deea;border-radius:11px;margin:6px 0 10px;font:inherit}
+button{border:0;border-radius:11px;padding:12px 15px;background:#4e43d9;color:white;font:600 14px inherit;cursor:pointer;width:100%;margin:5px 0}
+button.secondary{background:#edf0ff;color:#3831a8}button.google{background:#fff;color:#222;border:1px solid #d9deea}
+.row{display:flex;gap:10px}.row button{flex:1}.balance{font-size:36px;font-weight:800;margin:2px 0}.pill{display:inline-block;background:#e9fff2;color:#187346;padding:5px 10px;border-radius:30px;font-size:12px}
+.hidden{display:none!important}#message{margin:10px 0;padding:10px 12px;border-radius:10px;background:#fff5d9;color:#765400;font-size:13px;display:none;overflow-wrap:anywhere}
+footer{text-align:center;color:#7c8494;font-size:12px;padding:16px}
 </style>
 </head>
-
 <body>
+<div class="wrap">
+<header><h1>🎁 My Reward App</h1><p>Sign in • Earn coins • Redeem codes</p></header>
+<div id="message" role="status"></div>
 
-<header>🪙 My Reward</header>
+<section class="card" id="authCard">
+<h2>Login / Create account</h2>
+<p class="muted">Use your email and password, or continue with Google.</p>
+<input id="email" type="email" autocomplete="email" placeholder="Email address">
+<input id="password" type="password" autocomplete="current-password" placeholder="Password (at least 6 characters)">
+<div class="row"><button id="signupBtn">Sign up</button><button id="loginBtn" class="secondary">Login</button></div>
+<button id="googleBtn" class="google">Continue with Google</button>
+</section>
 
-<div class="card" id="authBox">
+<section class="card hidden" id="appCard">
+<div class="row" style="align-items:center;justify-content:space-between"><h2 style="margin:0">Your dashboard</h2><span class="pill">Signed in</span></div>
+<p class="muted" id="userEmail"></p>
+<p class="muted">Your demo balance</p><div class="balance">🪙 <span id="balance">0</span></div>
+<p class="muted">This starter version stores demo coins on this device only. They are not cash and cannot be exchanged for real rewards.</p>
+<button id="earnBtn">Earn 10 demo coins</button>
+<hr style="border:0;border-top:1px solid #edf0f5;margin:18px 0">
+<h2>Redeem a code</h2>
+<input id="redeemInput" placeholder="Enter redeem code" autocapitalize="characters">
+<button id="redeemBtn">Redeem code</button>
+<p class="muted">Demo code: <b>WELCOME50</b> (can be used once on this device).</p>
+<button id="logoutBtn" class="secondary">Log out</button>
+</section>
 
-  <h2 id="formTitle">Login</h2>
-
-  <form id="authForm">
-
-    <input
-      id="email"
-      type="email"
-      placeholder="Email"
-      autocomplete="email"
-      required
-    >
-
-    <input
-      id="password"
-      type="password"
-      placeholder="Password (min 6)"
-      minlength="6"
-      autocomplete="current-password"
-      required
-    >
-
-    <button type="submit" id="submitBtn">
-      Login
-    </button>
-
-  </form>
-
-  <button class="secondary" id="createBtn">
-    Create new account
-  </button>
-
-  <button class="secondary" id="forgotBtn">
-    Forgot password?
-  </button>
-
-  <button class="secondary hidden" id="backBtn">
-    Back to Login
-  </button>
-
-  <p class="message" id="authMessage"></p>
-
+<section class="card">
+<h2>How this starter app works</h2>
+<p class="muted">Email/password and Google sign-in use Firebase Authentication. Coin earning and WELCOME50 are only a local demo. Before launching a real reward app, coin changes and redeem-code checks must be moved to a trusted backend with secure database rules.</p>
+</section>
+<footer>My Reward App • Starter version</footer>
 </div>
 
-<div class="card hidden" id="dashboard">
-
-  <h2>🏆 Reward Dashboard</h2>
-
-  <p>Welcome!</p>
-  <p id="userEmail"></p>
-
-  <div class="balance">
-    <p>Your Reward Points</p>
-    <div class="points">0</div>
-    <p>Points</p>
-  </div>
-
-  <p class="small">
-    Your reward balance will appear here when a secure
-    reward system is connected.
-  </p>
-
-  <button id="logoutBtn">Logout</button>
-
-  <p class="message" id="dashMessage"></p>
-
-</div>
-
-<script type="module">
-
-import { initializeApp }
-  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyAR9dAuju4r-bKWuJoh_ILVSqli4UClXzw",
   authDomain: "my-reward-app-94b49.firebaseapp.com",
@@ -194,159 +66,53 @@ const firebaseConfig = {
   appId: "1:81228671923:web:a68a414c4226ce9156b9c6"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+const $ = id => document.getElementById(id);
+let balance = Number(localStorage.getItem("mra_demo_balance") || 0);
+let usedWelcome = localStorage.getItem("mra_welcome_used") === "yes";
 
-const authBox = document.getElementById("authBox");
-const dashboard = document.getElementById("dashboard");
-const form = document.getElementById("authForm");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
-
-const title = document.getElementById("formTitle");
-const submitBtn = document.getElementById("submitBtn");
-const createBtn = document.getElementById("createBtn");
-const forgotBtn = document.getElementById("forgotBtn");
-const backBtn = document.getElementById("backBtn");
-
-const message = document.getElementById("authMessage");
-const dashMessage = document.getElementById("dashMessage");
-
-let mode = "login";
-
-function showMessage(text) {
-  message.textContent = text;
+function message(text) {
+  $("message").textContent = text;
+  $("message").style.display = "block";
 }
+function showBalance(){ $("balance").textContent = balance; }
+function saveBalance(){ localStorage.setItem("mra_demo_balance", String(balance)); showBalance(); }
 
-function setMode(newMode) {
-  mode = newMode;
-  message.textContent = "";
-
-  passwordInput.value = "";
-  passwordInput.required = mode !== "forgot";
-  passwordInput.classList.toggle("hidden", mode === "forgot");
-
-  if (mode === "login") {
-    title.textContent = "Login";
-    submitBtn.textContent = "Login";
-    createBtn.classList.remove("hidden");
-    forgotBtn.classList.remove("hidden");
-    backBtn.classList.add("hidden");
-    passwordInput.autocomplete = "current-password";
-  }
-
-  if (mode === "register") {
-    title.textContent = "Create Account";
-    submitBtn.textContent = "Register";
-    createBtn.classList.add("hidden");
-    forgotBtn.classList.add("hidden");
-    backBtn.classList.remove("hidden");
-    passwordInput.autocomplete = "new-password";
-  }
-
-  if (mode === "forgot") {
-    title.textContent = "Reset Password";
-    submitBtn.textContent = "Send Reset Email";
-    createBtn.classList.add("hidden");
-    forgotBtn.classList.add("hidden");
-    backBtn.classList.remove("hidden");
-  }
-}
-
-createBtn.addEventListener("click", () => {
-  setMode("register");
+$("signupBtn").addEventListener("click", async () => {
+  const email=$("email").value.trim(), password=$("password").value;
+  if(!email || password.length<6){message("Enter a valid email and a password with at least 6 characters.");return;}
+  try { await auth.createUserWithEmailAndPassword(email,password); message("Account created successfully."); }
+  catch(e){message(e.message);}
 });
-
-forgotBtn.addEventListener("click", () => {
-  setMode("forgot");
+$("loginBtn").addEventListener("click", async () => {
+  const email=$("email").value.trim(), password=$("password").value;
+  if(!email || !password){message("Enter your email and password.");return;}
+  try { await auth.signInWithEmailAndPassword(email,password); message("Logged in successfully."); }
+  catch(e){message(e.message);}
 });
-
-backBtn.addEventListener("click", () => {
-  setMode("login");
+$("googleBtn").addEventListener("click", async () => {
+  try { await auth.signInWithPopup(provider); }
+  catch(e){message(e.message + " If Google sign-in fails, check Firebase Authentication > Settings > Authorized domains and add your GitHub Pages domain.");}
 });
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-
-  submitBtn.disabled = true;
-  showMessage("Please wait...");
-
-  try {
-    if (mode === "register") {
-      await createUserWithEmailAndPassword(
-        auth, email, password
-      );
-
-      showMessage("Account created successfully!");
-    }
-
-    else if (mode === "login") {
-      await signInWithEmailAndPassword(
-        auth, email, password
-      );
-    }
-
-    else if (mode === "forgot") {
-      await sendPasswordResetEmail(auth, email);
-
-      showMessage("Password reset email sent. Check your inbox.");
-    }
-
-  } catch (error) {
-    const errors = {
-      "auth/email-already-in-use":
-        "This email is already registered.",
-      "auth/invalid-email":
-        "Please enter a valid email.",
-      "auth/invalid-credential":
-        "Incorrect email or password.",
-      "auth/weak-password":
-        "Password must be at least 6 characters.",
-      "auth/too-many-requests":
-        "Too many attempts. Please try again later.",
-      "auth/network-request-failed":
-        "Network error. Check your internet connection.",
-      "auth/operation-not-allowed":
-        "Enable Email/Password in Firebase Authentication."
-    };
-
-    showMessage(
-      errors[error.code] || error.message
-    );
-
-  } finally {
-    submitBtn.disabled = false;
-  }
+$("logoutBtn").addEventListener("click", async () => { try { await auth.signOut(); message("You have logged out."); } catch(e){message(e.message);} });
+$("earnBtn").addEventListener("click", () => {
+  balance += 10; saveBalance(); message("10 demo coins added on this device.");
 });
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    authBox.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-
-    document.getElementById("userEmail").textContent =
-      user.email || "";
-  } else {
-    dashboard.classList.add("hidden");
-    authBox.classList.remove("hidden");
-  }
+$("redeemBtn").addEventListener("click", () => {
+  const code=$("redeemInput").value.trim().toUpperCase();
+  if(code !== "WELCOME50"){message("Invalid demo code. Try WELCOME50.");return;}
+  if(usedWelcome){message("WELCOME50 has already been used on this device.");return;}
+  balance += 50; usedWelcome=true; localStorage.setItem("mra_welcome_used","yes"); saveBalance();
+  $("redeemInput").value=""; message("Success! 50 demo coins added.");
 });
-
-document.getElementById("logoutBtn")
-  .addEventListener("click", async () => {
-    try {
-      await signOut(auth);
-      dashMessage.textContent = "";
-      setMode("login");
-    } catch (error) {
-      dashMessage.textContent = error.message;
-    }
-  });
-
+auth.onAuthStateChanged(user => {
+  $("authCard").classList.toggle("hidden", !!user);
+  $("appCard").classList.toggle("hidden", !user);
+  if(user){ $("userEmail").textContent=user.email || "Signed in with Google"; showBalance(); }
+});
 </script>
-
 </body>
-</html>
+  </html>
+  
