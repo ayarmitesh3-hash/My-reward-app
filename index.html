@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Reward</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 25px 16px;
+  background: #100c20;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  text-align: center;
+  font-size: 35px;
+  font-weight: bold;
+  color: #c49aff;
+  margin: 30px 0;
+}
+
+.card {
+  max-width: 500px;
+  margin: auto;
+  padding: 25px;
+  border-radius: 25px;
+  background: #211a38;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+input {
+  width: 100%;
+  padding: 16px;
+  margin: 8px 0;
+  border: 1px solid #51426e;
+  border-radius: 12px;
+  background: #382d50;
+  color: white;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: #8954ff;
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.secondary {
+  background: #382d50;
+}
+
+.hidden {
+  display: none;
+}
+
+.message {
+  margin-top: 15px;
+  overflow-wrap: anywhere;
+  color: #ff9da9;
+}
+
+.balance {
+  padding: 25px;
+  margin: 20px 0;
+  border-radius: 18px;
+  text-align: center;
+  background: #38275a;
+}
+
+.points {
+  font-size: 40px;
+  font-weight: bold;
+  color: #d1adff;
+}
+
+.small {
+  color: #c8bfd8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<header>🪙 My Reward</header>
+
+<div class="card" id="authBox">
+
+  <h2 id="formTitle">Login</h2>
+
+  <form id="authForm">
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Email"
+      autocomplete="email"
+      required
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password (min 6)"
+      minlength="6"
+      autocomplete="current-password"
+      required
+    >
+
+    <button type="submit" id="submitBtn">
+      Login
+    </button>
+
+  </form>
+
+  <button class="secondary" id="createBtn">
+    Create new account
+  </button>
+
+  <button class="secondary" id="forgotBtn">
+    Forgot password?
+  </button>
+
+  <button class="secondary hidden" id="backBtn">
+    Back to Login
+  </button>
+
+  <p class="message" id="authMessage"></p>
+
+</div>
+
+<div class="card hidden" id="dashboard">
+
+  <h2>🏆 Reward Dashboard</h2>
+
+  <p>Welcome!</p>
+  <p id="userEmail"></p>
+
+  <div class="balance">
+    <p>Your Reward Points</p>
+    <div class="points">0</div>
+    <p>Points</p>
+  </div>
+
+  <p class="small">
+    Your reward balance will appear here when a secure
+    reward system is connected.
+  </p>
+
+  <button id="logoutBtn">Logout</button>
+
+  <p class="message" id="dashMessage"></p>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAR9dAuju4r-bKWuJoh_ILVSqli4UClXzw",
+  authDomain: "my-reward-app-94b49.firebaseapp.com",
+  projectId: "my-reward-app-94b49",
+  storageBucket: "my-reward-app-94b49.firebasestorage.app",
+  messagingSenderId: "81228671923",
+  appId: "1:81228671923:web:a68a414c4226ce9156b9c6"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const authBox = document.getElementById("authBox");
+const dashboard = document.getElementById("dashboard");
+const form = document.getElementById("authForm");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+const title = document.getElementById("formTitle");
+const submitBtn = document.getElementById("submitBtn");
+const createBtn = document.getElementById("createBtn");
+const forgotBtn = document.getElementById("forgotBtn");
+const backBtn = document.getElementById("backBtn");
+
+const message = document.getElementById("authMessage");
+const dashMessage = document.getElementById("dashMessage");
+
+let mode = "login";
+
+function showMessage(text) {
+  message.textContent = text;
+}
+
+function setMode(newMode) {
+  mode = newMode;
+  message.textContent = "";
+
+  passwordInput.value = "";
+  passwordInput.required = mode !== "forgot";
+  passwordInput.classList.toggle("hidden", mode === "forgot");
+
+  if (mode === "login") {
+    title.textContent = "Login";
+    submitBtn.textContent = "Login";
+    createBtn.classList.remove("hidden");
+    forgotBtn.classList.remove("hidden");
+    backBtn.classList.add("hidden");
+    passwordInput.autocomplete = "current-password";
+  }
+
+  if (mode === "register") {
+    title.textContent = "Create Account";
+    submitBtn.textContent = "Register";
+    createBtn.classList.add("hidden");
+    forgotBtn.classList.add("hidden");
+    backBtn.classList.remove("hidden");
+    passwordInput.autocomplete = "new-password";
+  }
+
+  if (mode === "forgot") {
+    title.textContent = "Reset Password";
+    submitBtn.textContent = "Send Reset Email";
+    createBtn.classList.add("hidden");
+    forgotBtn.classList.add("hidden");
+    backBtn.classList.remove("hidden");
+  }
+}
+
+createBtn.addEventListener("click", () => {
+  setMode("register");
+});
+
+forgotBtn.addEventListener("click", () => {
+  setMode("forgot");
+});
+
+backBtn.addEventListener("click", () => {
+  setMode("login");
+});
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  submitBtn.disabled = true;
+  showMessage("Please wait...");
+
+  try {
+    if (mode === "register") {
+      await createUserWithEmailAndPassword(
+        auth, email, password
+      );
+
+      showMessage("Account created successfully!");
+    }
+
+    else if (mode === "login") {
+      await signInWithEmailAndPassword(
+        auth, email, password
+      );
+    }
+
+    else if (mode === "forgot") {
+      await sendPasswordResetEmail(auth, email);
+
+      showMessage("Password reset email sent. Check your inbox.");
+    }
+
+  } catch (error) {
+    const errors = {
+      "auth/email-already-in-use":
+        "This email is already registered.",
+      "auth/invalid-email":
+        "Please enter a valid email.",
+      "auth/invalid-credential":
+        "Incorrect email or password.",
+      "auth/weak-password":
+        "Password must be at least 6 characters.",
+      "auth/too-many-requests":
+        "Too many attempts. Please try again later.",
+      "auth/network-request-failed":
+        "Network error. Check your internet connection.",
+      "auth/operation-not-allowed":
+        "Enable Email/Password in Firebase Authentication."
+    };
+
+    showMessage(
+      errors[error.code] || error.message
+    );
+
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authBox.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+
+    document.getElementById("userEmail").textContent =
+      user.email || "";
+  } else {
+    dashboard.classList.add("hidden");
+    authBox.classList.remove("hidden");
+  }
+});
+
+document.getElementById("logoutBtn")
+  .addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      dashMessage.textContent = "";
+      setMode("login");
+    } catch (error) {
+      dashMessage.textContent = error.message;
+    }
+  });
+
+</script>
+
+</body>
+</html>
